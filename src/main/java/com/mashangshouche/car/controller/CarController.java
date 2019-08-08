@@ -43,8 +43,8 @@ public class CarController {
         if (StringUtils.isNotEmpty(vin)) {
             car.setVin(vin);
         }
-        Example<Car> userExample = Example.of(car);
-        Page<Car> carPage = carService.findAll(userExample, PageRequest.of(page, pageSize,
+        Example<Car> carExample = Example.of(car);
+        Page<Car> carPage = carService.findAll(carExample, PageRequest.of(page, pageSize,
                 Sort.by(Sort.Direction.DESC, "createTime")));
         return Result.ok(carPage.map(CarVO::of));
     }

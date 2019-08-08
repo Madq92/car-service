@@ -6,10 +6,18 @@ import com.mashangshouche.car.entity.User;
 import com.mashangshouche.car.exception.NotFindException;
 import com.mashangshouche.car.service.UserService;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Example;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Optional;
@@ -26,12 +34,38 @@ public class UserController {
     UserService userService;
 
     @ApiOperation("获取用户")
-    @GetMapping(value = "/{id}")
+    @GetMapping("/{id}")
     public Result<UserVO> get(@PathVariable("id") @ApiParam("ID") String id) {
         Optional<User> userOptional = userService.findById(id);
         if (!userOptional.isPresent()) {
             throw new NotFindException("用户未找到");
         }
         return Result.ok(new UserVO().of(userOptional.get()));
+    }
+
+    @ApiOperation("添加用户")
+    @PostMapping
+    public Result<UserVO> add(@RequestBody UserVO vo) {
+        vo.setId(null);
+        return Result.ok(UserVO.of(userService.save(vo.to())));
+    }
+
+    @ApiOperation("用户列表")
+    @GetMapping
+    public Result<Page<UserVO>> list(@RequestParam(value = "phone",required = false) @ApiParam("电话号码") String phone,
+                               @RequestParam(value = "name",required = false) @ApiParam("姓名") String name,
+                              @RequestParam("page") @ApiParam("page") Integer page,
+                              @RequestParam("pageSize") @ApiParam("pageSize") Integer pageSize) {
+        User user = new User();
+        if (StringUtils.isNotEmpty(phone)) {
+            user.setPhone(phone);
+        }
+        if (StringUtils.isNotEmpty(name)){
+            user.setName(name);
+        }
+        Example<User> userExample = Example.of(user);
+        Page<User> carPage = userService.findAll(userExample, PageRequest.of(page, pageSize,
+                Sort.by(Sort.Direction.DESC, "createTime")));
+        return Result.ok(carPage.map(UserVO::of));
     }
 }

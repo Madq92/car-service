@@ -41,7 +41,7 @@ public class CbsController {
     CarService carService;
 
     @ApiOperation("下单")
-    @PostMapping("/insurance/order")
+    @PostMapping("/order")
     public Result<Boolean> add(@RequestParam("carId") @ApiParam("车辆ID") String carId,
                                @RequestParam("name") @ApiParam("联系人Name") String name,
                                @RequestParam("phone") @ApiParam("联系人电话") String phone,
@@ -76,19 +76,20 @@ public class CbsController {
         }
         String orderId = cbsHelper.insuranceOrder(params);
         car.setOrderNo(orderId);
+        car.setOrderType(Car.OrderType.WAITING_FOR_CHECK);
         carService.save(car);
         return Result.ok(true);
     }
 
-    @ApiOperation("获取开通")
-    @GetMapping("/opencity")
+    @ApiOperation("获取开通城市")
+    @GetMapping("/openCity")
     public Result<List<OpenCityResp>> add() {
         return Result.ok(cbsHelper.opencity());
     }
 
     @ApiOperation("订单状态")
-    @GetMapping("/orderInfo")
-    public Result<String> orderInfo(@RequestParam("carId") @ApiParam("车辆ID") String carId) {
+    @GetMapping("/synOrder")
+    public Result<Boolean> orderInfo(@RequestParam("carId") @ApiParam("车辆ID") String carId) {
         Optional<Car> carOptional = carService.findById(carId);
         if (!carOptional.isPresent()) {
             throw new NotFindException();
@@ -97,14 +98,25 @@ public class CbsController {
         if (StringUtils.isEmpty(car.getOrderNo())) {
             throw new BaseException("订单还未创建");
         }
-
-        String s = cbsHelper.insuranceOrderinfo(car.getOrderNo());
-        return Result.ok(s);
+        if (cbsHelper.insuranceOrderinfo(car.getOrderNo())){
+            car.setOrderType(Car.OrderType.SUCCESS);
+            carService.save(car);
+        }
+        return Result.ok(true);
     }
 
-    @ApiOperation("获取开通")
-    @GetMapping("/opencity")
-    public Result<List<OpenCityResp>> openCity() {
-        return Result.ok(cbsHelper.opencity());
+
+    @ApiOperation("获取报告URL")
+    @GetMapping("/reportUrl")
+    public Result<String> reportUrl(@RequestParam("carId") @ApiParam("车辆ID") String carId) {
+        Optional<Car> carOptional = carService.findById(carId);
+        if (!carOptional.isPresent()) {
+            throw new NotFindException();
+        }
+        Car car = carOptional.get();
+        if (StringUtils.isEmpty(car.getOrderNo())) {
+            throw new BaseException("订单还未创建");
+        }
+        return Result.ok(cbsHelper.getReportUrl(car.getOrderNo()));
     }
 }

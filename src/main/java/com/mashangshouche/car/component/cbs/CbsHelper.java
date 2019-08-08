@@ -59,14 +59,19 @@ public class CbsHelper {
     }
 
     /**
-     * 报告信息
+     * 检测是否完成
      */
-    public String insuranceOrderinfo(String orderno) {
+    public boolean insuranceOrderinfo(String orderno) {
         HashMap<String, Object> params = Maps.newHashMap();
         params.put("orderno", orderno);
         String result = cbsBuilder.sendPost("/insurance/orderinfo", params);
-
-        return result;
+        TypeReference typeReference = new TypeReference<Map<String, Object>>() {
+        };
+        Map<String, Object> payload = JacksonUtils.readValue(result, typeReference);
+        if("0".equals(payload.get("Code"))){
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -77,9 +82,7 @@ public class CbsHelper {
         params.put("orderno", orderno);
         params.put("showvalue", 1);
         params.put("showvin", 1);
-        String s = cbsBuilder.getReportUrl("/insurance/report", params);
-        System.out.println(s);
-        return s;
+        return cbsBuilder.getReportUrl("/insurance/report", params);
     }
 
 
