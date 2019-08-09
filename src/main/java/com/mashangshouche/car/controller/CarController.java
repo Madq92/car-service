@@ -12,6 +12,7 @@ import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -61,7 +62,7 @@ public class CarController {
 
     @ApiOperation("添加车辆")
     @PostMapping
-    public Result<CarVO> add(@RequestBody CarVO carVO) {
+    public Result<CarVO> add(@Validated @RequestBody CarVO carVO) {
         carVO.setId(null);
         return Result.ok(CarVO.of(carService.save(carVO.to())));
     }

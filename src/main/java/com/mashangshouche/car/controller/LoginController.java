@@ -10,8 +10,9 @@ import com.mashangshouche.car.entity.User;
 import com.mashangshouche.car.exception.BaseException;
 import com.mashangshouche.car.service.UserService;
 
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.codec.digest.DigestUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -32,13 +33,16 @@ public class LoginController {
     @IgnoreLogin
     @ApiOperation("用户登录")
     @PutMapping(value = "/login")
-    public Result<UserVO> login(@RequestBody LoginVO vo) {
+    public Result<UserVO> login(@Validated @RequestBody LoginVO vo) {
         Optional<User> userOptional = userService.findByPhone(vo.getPhone());
         if (!userOptional.isPresent()) {
-            throw new BaseException();
+            throw new BaseException("用户或密码错误");
         }
         User user = userOptional.get();
 
+        if (!user.getPassword().equals(DigestUtils.md5Hex(vo.getPassword()))){
+            throw new BaseException("用户或密码错误");
+        }
         UserVO userVO = new UserVO().of(user);
         userVO.setToken(jwtHelper.sign(user.getId()));
         return Result.ok(userVO);
