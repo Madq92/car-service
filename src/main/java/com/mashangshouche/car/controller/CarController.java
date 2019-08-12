@@ -63,8 +63,16 @@ public class CarController {
     @ApiOperation("添加车辆")
     @PostMapping
     public Result<CarVO> add(@Validated @RequestBody CarVO carVO) {
-        carVO.setId(null);
-        return Result.ok(CarVO.of(carService.save(carVO.to())));
+        Car car = carVO.to();
+        cleanCar(car);
+        return Result.ok(CarVO.of(carService.save(car)));
+    }
+
+    private void cleanCar(Car car) {
+        car.setId(null);
+        car.setOrderStatus(null);
+        car.setOrderNo(null);
+        car.setReportUrl(null);
     }
 
     @ApiOperation("修改车辆")

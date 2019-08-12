@@ -25,6 +25,23 @@ public class PriceUtils {
     /**
      * 格式转换
      *
+     * @param fen 以分为单位的价格
+     * @return
+     */
+    public static String toWanYuan(Long fen) {
+        if (null == fen) {
+            return null;
+        }
+        if (0 == fen.intValue()) {
+            return "0";
+        }
+        return new BigDecimal(fen).divide(new BigDecimal(1000000), 2, RoundingMode.UP).toString();
+    }
+
+
+    /**
+     * 格式转换
+     *
      * @param yuan 以元为单位的价格
      * @return
      */

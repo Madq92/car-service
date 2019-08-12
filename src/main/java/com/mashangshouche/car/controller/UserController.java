@@ -1,5 +1,6 @@
 package com.mashangshouche.car.controller;
 
+import com.mashangshouche.car.common.AuthHold;
 import com.mashangshouche.car.common.Result;
 import com.mashangshouche.car.controller.vo.UserVO;
 import com.mashangshouche.car.entity.User;
@@ -36,6 +37,13 @@ public class UserController {
     private final String DEFAULT_PASSWORD_MD5 = DigestUtils.md5Hex(DEFAULT_PASSWORD);
     @Autowired
     UserService userService;
+
+    @ApiOperation("当前用户信息")
+    @GetMapping("/my")
+    public Result<UserVO> my() {
+        User user = AuthHold.currentUser();
+        return Result.ok(new UserVO().of(user));
+    }
 
     @ApiOperation("获取用户")
     @GetMapping("/{id}")

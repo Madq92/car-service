@@ -28,17 +28,17 @@ public class Car extends BaseEntity {
     private String reportUrl;
 
     @Enumerated(EnumType.STRING)
-    private OrderType orderType;
+    private OrderStatus orderStatus;
 
 
     @Getter
-    public enum OrderType {
+    public enum OrderStatus {
         WAITING_FOR_CHECK("待检测"),
         SUCCESS("检测成功");
 
         private String display;
 
-        OrderType(String display) {
+        OrderStatus(String display) {
             this.display = display;
         }
     }

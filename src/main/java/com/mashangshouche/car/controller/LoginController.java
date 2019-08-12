@@ -13,7 +13,7 @@ import com.mashangshouche.car.service.UserService;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -32,7 +32,7 @@ public class LoginController {
 
     @IgnoreLogin
     @ApiOperation("用户登录")
-    @PutMapping(value = "/login")
+    @PostMapping(value = "/login")
     public Result<UserVO> login(@Validated @RequestBody LoginVO vo) {
         Optional<User> userOptional = userService.findByPhone(vo.getPhone());
         if (!userOptional.isPresent()) {
