@@ -7,6 +7,7 @@ import com.mashangshouche.car.common.Result;
 import com.mashangshouche.car.controller.vo.LoginVO;
 import com.mashangshouche.car.controller.vo.UserVO;
 import com.mashangshouche.car.entity.User;
+import com.mashangshouche.car.exception.BadRequestException;
 import com.mashangshouche.car.exception.BaseException;
 import com.mashangshouche.car.service.UserService;
 
@@ -36,14 +37,14 @@ public class LoginController {
     public Result<UserVO> login(@Validated @RequestBody LoginVO vo) {
         Optional<User> userOptional = userService.findByPhone(vo.getPhone());
         if (!userOptional.isPresent()) {
-            throw new BaseException("用户或密码错误");
+            throw new BadRequestException("用户或密码错误");
         }
         User user = userOptional.get();
 
         if (!user.getPassword().equals(DigestUtils.md5Hex(vo.getPassword()))){
-            throw new BaseException("用户或密码错误");
+            throw new BadRequestException("用户或密码错误");
         }
-        UserVO userVO = new UserVO().of(user);
+        UserVO userVO = new UserVO().convertFrom(user);
         userVO.setToken(jwtHelper.sign(user.getId()));
         return Result.ok(userVO);
     }

@@ -10,4 +10,6 @@ import java.util.Optional;
 
 public interface CarRepository extends JpaRepository<Car, String> {
     Optional<Car> findByVin(String vin);
+
+    Optional<Car> findByOrderId(String orderId);
 }

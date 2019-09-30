@@ -6,7 +6,7 @@ import com.chaboshi.builder.CBSBuilder;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mashangshouche.car.common.JacksonUtils;
-import com.mashangshouche.car.exception.BaseException;
+import com.mashangshouche.car.exception.CbsException;
 
 import java.util.HashMap;
 import java.util.List;
@@ -30,7 +30,7 @@ public class CbsHelper {
         };
         CbsPayload<List<OpenCityResp>> resp = JacksonUtils.readValue(result, typeReference);
         if (!"0".equals(resp.getCode())) {
-            throw new BaseException(resp.getMessage());
+            throw new CbsException(resp.getMessage());
         }
         return resp.getData();
     }
@@ -53,7 +53,7 @@ public class CbsHelper {
         };
         Map<String, String> payload = JacksonUtils.readValue(result, typeReference);
         if (!"0".equals(payload.get("Code"))) {
-            throw new BaseException(payload.get("Message"));
+            throw new CbsException(payload.get("Message"));
         }
         return payload.get("Orderno");
     }
@@ -61,17 +61,17 @@ public class CbsHelper {
     /**
      * 检测是否完成
      */
-    public boolean insuranceOrderinfo(String orderno) {
+    public String insuranceOrderinfo(String orderno) {
         HashMap<String, Object> params = Maps.newHashMap();
         params.put("orderno", orderno);
         String result = cbsBuilder.sendPost("/insurance/orderinfo", params);
-        TypeReference typeReference = new TypeReference<Map<String, Object>>() {
-        };
-        Map<String, Object> payload = JacksonUtils.readValue(result, typeReference);
-        if("0".equals(payload.get("Code"))){
-            return true;
-        }
-        return false;
+        //TypeReference typeReference = new TypeReference<Map<String, Object>>() {
+        //};
+        //Map<String, Object> payload = JacksonUtils.readValue(result, typeReference);
+        //if("0".equals(payload.get("Code"))){
+        //    return true;
+        //}
+        return result;
     }
 
     /**

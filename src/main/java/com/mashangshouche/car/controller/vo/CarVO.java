@@ -1,10 +1,12 @@
 package com.mashangshouche.car.controller.vo;
 
+import com.mashangshouche.car.controller.vo.base.InputConverter;
+import com.mashangshouche.car.controller.vo.base.OutputConverter;
 import com.mashangshouche.car.entity.Car;
-import com.mashangshouche.car.util.BeanCopyUtils;
+import com.mashangshouche.car.util.DateUtils;
 import com.mashangshouche.car.util.PriceUtils;
 
-import javax.validation.constraints.Min;
+import java.util.Date;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -12,60 +14,52 @@ import lombok.Data;
 
 @Data
 @ApiModel
-public class CarVO {
+public class CarVO implements InputConverter<Car>, OutputConverter<CarVO, Car> {
+
+
     @ApiModelProperty("车辆ID")
     private String id;
-    @ApiModelProperty("城市ID")
-    private String cityid;
-    @ApiModelProperty("城市Name")
-    private String cityName;
-    @ApiModelProperty("联系人Name")
-    private String userName;
-    @ApiModelProperty("联系人Phone")
-    private String userPhone;
-    @ApiModelProperty("地址")
-    private String address;
+    @ApiModelProperty("车辆评级")
+    private String carLevel;
     @ApiModelProperty("车牌号")
-    private String licensePlate;
-    @ApiModelProperty("类型(101：本地事故保 ，102：本地事故保)")
-    private String type;
-    @ApiModelProperty("vin码")
-    private String vin;
+    private String carNo;
+    @ApiModelProperty("图片")
+    private String leftPicture;
     @ApiModelProperty("车型")
-    private String model;
-    @ApiModelProperty("价格，单位分")
+    private String modelName;
+    @ApiModelProperty("上牌时间")
+    private String plateYear;
+    @ApiModelProperty("VIN码")
+    private String vin;
+    @ApiModelProperty("里程")
+    private String watchMile;
+
+
+    @ApiModelProperty("自己的定价，分")
     private Long price;
-    @ApiModelProperty("订单号")
-    private String orderNo;
-    @ApiModelProperty("订单状态")
-    private String orderStatus;
-    @ApiModelProperty("订单状态str")
-    private String orderStatusStr;
+    @ApiModelProperty("自己的定价，万")
+    private String priceStr;
+
+    @ApiModelProperty("车辆状态")
+    private String status;
+    @ApiModelProperty("车辆状态Str")
+    private String statusStr;
     @ApiModelProperty("报告URL")
     private String reportUrl;
 
-    @ApiModelProperty("价格，单位万")
-    public String getPriceWanStr() {
-        if (this.price != null && this.price != 0) {
-            return PriceUtils.toWanYuan(this.price);
+    public static CarVO customConverter(Car carModel) {
+        CarVO carVO = new CarVO().convertFrom(carModel);
+        Car.Status status = carModel.getStatus();
+        if (status != null) {
+            carVO.setStatus(status.name());
+            carVO.setStatusStr(status.getDisplay());
         }
-        return null;
-    }
 
-
-    public static CarVO of(Car car) {
-        CarVO carVO = new CarVO();
-        BeanCopyUtils.copy(car, carVO);
-        if (car.getOrderStatus() != null) {
-            carVO.setOrderStatus(car.getOrderStatus().name());
-            carVO.setOrderStatusStr(car.getOrderStatus().getDisplay());
+        Long price = carModel.getPrice();
+        if (price != null) {
+            carVO.setPrice(price);
+            carVO.setPriceStr(PriceUtils.toWanYuan(price));
         }
         return carVO;
-    }
-
-    public Car to() {
-        Car car = new Car();
-        BeanCopyUtils.copy(this, car);
-        return car;
     }
 }

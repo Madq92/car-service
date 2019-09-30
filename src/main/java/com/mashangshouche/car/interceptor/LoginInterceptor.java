@@ -26,6 +26,7 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2
 @Component
 public class LoginInterceptor extends DefaultInterceptor implements HandlerInterceptor {
+    private static final String PACKAGE_PREFIX = "com.mashangshouche.car";
     private static final String TOKEN_KEY = "token";
     @Autowired
     UserService userService;
@@ -39,12 +40,18 @@ public class LoginInterceptor extends DefaultInterceptor implements HandlerInter
             return true;
         }
         HandlerMethod handlerMethod = (HandlerMethod) handler;
-        String typeName = handlerMethod.getBeanType().getName();
-        if (!typeName.startsWith("com.mashangshouche.car")) {
+
+        Class<?> beanType = handlerMethod.getBeanType();
+        String typeName = beanType.getName();
+        if (!typeName.startsWith(PACKAGE_PREFIX)) {
             return true;
         }
-        boolean ignoreLogin = handlerMethod.hasMethodAnnotation(IgnoreLogin.class);
-        if (ignoreLogin) {
+
+        if (beanType.isAnnotationPresent(IgnoreLogin.class)) {
+            return true;
+        }
+
+        if (handlerMethod.hasMethodAnnotation(IgnoreLogin.class)) {
             return true;
         }
 

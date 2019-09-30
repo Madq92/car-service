@@ -1,37 +1,32 @@
 package com.mashangshouche.car.exception;
 
-import lombok.Getter;
+import org.springframework.http.HttpStatus;
+import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
 
-public class BaseException extends RuntimeException {
+public abstract class BaseException extends RuntimeException {
     private static final String SYSTEM_ERROR = "system error!";
-    @Getter
-    private int httpStatusCode;
-
-    public BaseException() {
-        super(SYSTEM_ERROR);
-        this.httpStatusCode = 500;
-    }
-
-    public BaseException(int httpStatusCode) {
-        this.httpStatusCode = httpStatusCode;
-    }
+    private Object errorData;
 
     public BaseException(String message) {
         super(message);
-        this.httpStatusCode = 500;
-    }
-
-    public BaseException(int httpStatusCode, String message) {
-        super(message);
-        this.httpStatusCode = httpStatusCode;
     }
 
     public BaseException(String message, Throwable cause) {
         super(message, cause);
     }
 
-    public BaseException(int httpStatusCode, String message, Throwable cause) {
-        super(message, cause);
-        this.httpStatusCode = httpStatusCode;
+    @NonNull
+    public abstract HttpStatus getStatus();
+
+    @Nullable
+    public Object getErrorData() {
+        return errorData;
+    }
+
+    @NonNull
+    public BaseException setErrorData(@Nullable Object errorData) {
+        this.errorData = errorData;
+        return this;
     }
 }

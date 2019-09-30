@@ -1,7 +1,7 @@
 package com.mashangshouche.car.configuration;
 
 import com.mashangshouche.car.common.JwtHelper;
-import com.mashangshouche.car.exception.BaseException;
+import com.mashangshouche.car.exception.InternalServerErrorException;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -22,7 +22,7 @@ public class JwtConfig {
         try {
             return new JwtHelper(secret);
         } catch (UnsupportedEncodingException e) {
-            throw new BaseException("jwt.secret error!");
+            throw new InternalServerErrorException("jwt.secret error!");
         }
     }
 }

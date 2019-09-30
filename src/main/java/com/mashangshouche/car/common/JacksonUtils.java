@@ -6,6 +6,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mashangshouche.car.exception.BaseException;
+import com.mashangshouche.car.exception.InternalServerErrorException;
 
 import java.io.IOException;
 
@@ -26,7 +27,7 @@ public class JacksonUtils {
             return mapper.readValue(content, valueType);
         } catch (IOException e) {
             log.error("data parse error, content = {}", content, e);
-            throw new BaseException(500, content);
+            throw new InternalServerErrorException(content);
         }
     }
 
@@ -35,7 +36,7 @@ public class JacksonUtils {
             return mapper.readValue(content, valueTypeRef);
         } catch (IOException e) {
             log.error("data parse error, content = {}", content, e);
-            throw new BaseException(500, content);
+            throw new InternalServerErrorException(content);
         }
     }
 
@@ -44,7 +45,7 @@ public class JacksonUtils {
             return mapper.writeValueAsString(object);
         } catch (JsonProcessingException e) {
             log.error("write value error, object = {}", object, e);
-            throw new BaseException(500);
+            throw new InternalServerErrorException();
         }
     }
 }

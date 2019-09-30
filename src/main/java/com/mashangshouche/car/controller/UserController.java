@@ -1,6 +1,7 @@
 package com.mashangshouche.car.controller;
 
 import com.mashangshouche.car.common.AuthHold;
+import com.mashangshouche.car.common.IgnoreLogin;
 import com.mashangshouche.car.common.Result;
 import com.mashangshouche.car.controller.vo.UserVO;
 import com.mashangshouche.car.entity.User;
@@ -42,7 +43,7 @@ public class UserController {
     @GetMapping("/my")
     public Result<UserVO> my() {
         User user = AuthHold.currentUser();
-        return Result.ok(new UserVO().of(user));
+        return Result.ok(new UserVO().convertFrom(user));
     }
 
     @ApiOperation("获取用户")
@@ -52,18 +53,19 @@ public class UserController {
         if (!userOptional.isPresent()) {
             throw new NotFindException("用户未找到");
         }
-        return Result.ok(new UserVO().of(userOptional.get()));
+        return Result.ok(new UserVO().convertFrom(userOptional.get()));
     }
 
     @ApiOperation("添加用户")
     @PostMapping
+    @IgnoreLogin
     public Result<UserVO> add(@Validated @RequestBody UserVO vo) {
         User user = new User();
         user.setName(vo.getName());
         user.setPhone(vo.getPhone());
         user.setAvatar(vo.getAvatar());
         user.setPassword(DEFAULT_PASSWORD_MD5);
-        return Result.ok(UserVO.of(userService.save(user)));
+        return Result.ok(new UserVO().convertFrom(userService.save(user)));
     }
 
     @ApiOperation("用户列表")
@@ -82,6 +84,6 @@ public class UserController {
         Example<User> userExample = Example.of(user);
         Page<User> carPage = userService.findAll(userExample, PageRequest.of(page, pageSize,
                 Sort.by(Sort.Direction.DESC, "createTime")));
-        return Result.ok(carPage.map(UserVO::of));
+        return Result.ok(carPage.map(userModel -> new UserVO().convertFrom(userModel)));
     }
 }

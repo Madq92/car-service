@@ -1,6 +1,8 @@
 package com.mashangshouche.car.controller.vo;
 
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -9,22 +11,11 @@ import lombok.Data;
 @Data
 @ApiModel
 public class CbsOrderVO {
-    @NotBlank
-    @ApiModelProperty("车辆ID")
-    private String carId;
-    @NotBlank
-    @ApiModelProperty("联系人Name")
-    private String name;
-    @NotBlank
-    @ApiModelProperty("联系人电话")
-    private String phone;
-    @NotBlank
-    @ApiModelProperty("地址")
-    private String address;
-    @NotBlank
-    @ApiModelProperty("城市ID")
-    private String cityId;
-    @NotBlank
-    @ApiModelProperty("产品类型")
-    private String type;
+    @NotBlank(message = "联系人ID不能为空")
+    @ApiModelProperty("联系人ID")
+    private String contactId;
+    @NotNull(message = "车辆数不能为空")
+    @Min(value = 1, message = "最少1辆车")
+    @ApiModelProperty("车辆数量")
+    private Integer carCount;
 }

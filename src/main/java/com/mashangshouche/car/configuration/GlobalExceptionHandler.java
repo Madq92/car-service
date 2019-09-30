@@ -24,9 +24,9 @@ public class GlobalExceptionHandler {
     public ResponseEntity<Result> handleException(Exception ex) {
         if (ex instanceof BaseException) {
             BaseException baseException = (BaseException) ex;
-            log.error(baseException.getMessage());
-            Result baseErrorResult = Result.error(baseException.getHttpStatusCode(), baseException.getMessage());
-            return ResponseEntity.status(baseException.getHttpStatusCode()).body(baseErrorResult);
+            log.error(baseException.getMessage(), baseException);
+            Result baseErrorResult = Result.error(baseException.getStatus().value(), baseException.getMessage());
+            return ResponseEntity.status(baseException.getStatus().value()).body(baseErrorResult);
         } else if (ex instanceof MethodArgumentNotValidException) {
             MethodArgumentNotValidException validException = (MethodArgumentNotValidException) ex;
             log.error(validException.getMessage());
